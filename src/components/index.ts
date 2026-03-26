@@ -7,6 +7,7 @@ export { GoBack } from "./ui/GoBack";
 /* Products */
 export { ProductCard } from "./products/ProductCard";
 export { ErrorAlert } from "./products/ErrorAlert";
+export { ProductFilters } from "./products/ProductFilters";
 
 /* Cart */
 export { CartItemCard } from "./cart/CartItemCard";
