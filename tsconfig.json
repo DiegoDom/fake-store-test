@@ -1,7 +1,21 @@
 {
   "files": [],
+  "compilerOptions": {
+    "paths": {
+      "@layouts/*": [
+        "./src/layouts/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ]
+    }
+  },
   "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
   ]
 }
