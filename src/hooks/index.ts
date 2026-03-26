@@ -1,3 +1,3 @@
-export { useDebounce } from "./useDebounce";
-export { useProducts } from "./useProducts";
-export { useProduct } from "./useProduct";
+export { useDebounce } from "./shared/useDebounce";
+export { useProducts } from "./products/useProducts";
+export { useProduct } from "./products/useProduct";

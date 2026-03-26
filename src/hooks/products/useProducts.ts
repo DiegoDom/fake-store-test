@@ -1,31 +1,27 @@
-import { useEffect, useState, useCallback } from "react";
-import { getProductById } from "../services/products";
-import type { Product } from "../interfaces";
+import { useCallback, useEffect, useState } from "react";
+import type { Product } from "../../interfaces";
+import { getProducts } from "../../services/products";
 
-export const useProduct = (id?: string) => {
-  const [product, setProduct] = useState<Product | null>(null);
+export const useProducts = () => {
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchProduct = useCallback(async () => {
-    if (!id) return;
-
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const data: Product = await getProductById(id);
-      setProduct(data);
+      const data: Product[] = await getProducts();
+      setProducts(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, []);
 
   useEffect(() => {
-    if (!id) return;
-
     let isMounted = true;
 
     const load = async () => {
@@ -33,19 +29,17 @@ export const useProduct = (id?: string) => {
         setLoading(true);
         setError(null);
 
-        const data: Product = await getProductById(id);
+        const data: Product[] = await getProducts();
 
         if (isMounted) {
-          setProduct(data);
+          setProducts(data);
         }
       } catch (err) {
         if (!isMounted) return;
 
         setError(err instanceof Error ? err.message : "Unknown error");
       } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
+        if (isMounted) setLoading(false);
       }
     };
 
@@ -54,14 +48,14 @@ export const useProduct = (id?: string) => {
     return () => {
       isMounted = false;
     };
-  }, [id]);
+  }, []);
 
   const refetch = useCallback(() => {
-    fetchProduct();
-  }, [fetchProduct]);
+    fetchProducts();
+  }, [fetchProducts]);
 
   return {
-    product,
+    products,
     loading,
     error,
     refetch,

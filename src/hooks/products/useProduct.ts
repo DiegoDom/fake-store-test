@@ -1,27 +1,31 @@
-import { useCallback, useEffect, useState } from "react";
-import type { Product } from "../interfaces";
-import { getProducts } from "../services/products";
+import { useEffect, useState, useCallback } from "react";
+import { getProductById } from "../../services/products";
+import type { Product } from "../../interfaces";
 
-export const useProducts = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+export const useProduct = (id?: string) => {
+  const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchProducts = useCallback(async () => {
+  const fetchProduct = useCallback(async () => {
+    if (!id) return;
+
     try {
       setLoading(true);
       setError(null);
 
-      const data: Product[] = await getProducts();
-      setProducts(data);
+      const data: Product = await getProductById(id);
+      setProduct(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [id]);
 
   useEffect(() => {
+    if (!id) return;
+
     let isMounted = true;
 
     const load = async () => {
@@ -29,17 +33,19 @@ export const useProducts = () => {
         setLoading(true);
         setError(null);
 
-        const data: Product[] = await getProducts();
+        const data: Product = await getProductById(id);
 
         if (isMounted) {
-          setProducts(data);
+          setProduct(data);
         }
       } catch (err) {
         if (!isMounted) return;
 
         setError(err instanceof Error ? err.message : "Unknown error");
       } finally {
-        if (isMounted) setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
@@ -48,14 +54,14 @@ export const useProducts = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [id]);
 
   const refetch = useCallback(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    fetchProduct();
+  }, [fetchProduct]);
 
   return {
-    products,
+    product,
     loading,
     error,
     refetch,

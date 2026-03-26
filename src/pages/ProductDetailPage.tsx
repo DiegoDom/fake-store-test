@@ -1,13 +1,13 @@
-import { useParams, useNavigate } from "react-router";
-import { ErrorAlert, Loader } from "../components";
+import { useParams } from "react-router";
+import { ErrorAlert, GoBack, Loader } from "../components";
 import { formatPrice } from "../helpers";
 import { useProduct } from "../hooks";
+import { useCartContext } from "../hooks/cart/useCartContext";
 
 export const ProductDetailPage = () => {
-  const navigate = useNavigate();
-
   const { id } = useParams();
   const { product, loading, error, refetch } = useProduct(id);
+  const { addToCart } = useCartContext();
 
   if (loading) return <Loader />;
 
@@ -19,19 +19,9 @@ export const ProductDetailPage = () => {
     return <p className="text-center">Product not found</p>;
   }
 
-  const handleGoBack = () => {
-    if (window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate("/");
-    }
-  };
-
   return (
     <>
-      <button onClick={handleGoBack} className="btn btn-ghost flex items-center gap-2 mb-4">
-        ← Back
-      </button>
+      <GoBack />
       <div className="grid md:grid-cols-2 gap-8">
         <div className="flex justify-center items-center bg-white p-6 rounded-lg">
           <img src={product.image} alt={product.title} className="h-80 object-contain" />
@@ -46,7 +36,9 @@ export const ProductDetailPage = () => {
 
           <p className="text-3xl font-bold text-primary">{formatPrice(product.price)}</p>
 
-          <button className="btn btn-primary w-full md:w-fit">Add to cart</button>
+          <button className="btn btn-primary w-full md:w-fit" onClick={() => addToCart(product)}>
+            Add to cart
+          </button>
         </div>
       </div>
     </>

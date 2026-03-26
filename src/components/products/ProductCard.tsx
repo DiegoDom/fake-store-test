@@ -1,8 +1,10 @@
 import { Link } from "react-router";
 import { formatPrice } from "../../helpers";
 import type { Product } from "../../interfaces";
+import { useCartContext } from "../../hooks/cart/useCartContext";
 
 export const ProductCard = (product: Product) => {
+  const { addToCart } = useCartContext();
   return (
     <div className="card bg-base-100 shadow-md hover:shadow-xl transition-shadow duration-300">
       {/* IMAGE */}
@@ -26,7 +28,9 @@ export const ProductCard = (product: Product) => {
           <Link to={`/products/${product.id}`} className="btn btn-secondary btn-sm">
             View details
           </Link>
-          <button className="btn btn-primary btn-sm">Add to cart</button>
+          <button onClick={() => addToCart(product)} className="btn btn-primary btn-sm">
+            Add to cart
+          </button>
         </div>
       </div>
     </div>
