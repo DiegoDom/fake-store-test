@@ -1,12 +1,16 @@
 // router.tsx
 import { createBrowserRouter, Navigate, type RouteObject } from "react-router";
-import { CartPage, CheckoutPage, HomePage } from "../pages";
+import { CartPage, CheckoutPage, HomePage, ProductDetailPage } from "../pages";
 import { MainLayout } from "../layouts";
 
 const AppRoutes: RouteObject[] = [
   {
     index: true,
     element: <HomePage />,
+  },
+  {
+    path: "products/:id",
+    element: <ProductDetailPage />,
   },
   {
     path: "cart",
