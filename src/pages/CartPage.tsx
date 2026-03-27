@@ -36,7 +36,7 @@ export const CartPage = () => {
                   <span>
                     Subtotal ({totalItems}) {totalItems === 1 ? "item" : "items"}
                   </span>
-                  <span>{formatPrice(subtotal * totalItems)}</span>
+                  <span>{formatPrice(subtotal)}</span>
                 </div>
 
                 <div className="flex justify-between">
@@ -48,7 +48,7 @@ export const CartPage = () => {
 
                 <div className="flex justify-between font-semibold">
                   <span>Order total</span>
-                  <span>{formatPrice(subtotal * totalItems)}</span>
+                  <span>{formatPrice(subtotal)}</span>
                 </div>
               </div>
 
