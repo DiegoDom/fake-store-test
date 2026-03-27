@@ -1,63 +1,67 @@
-import { useCallback, useEffect, useState } from "react";
-import type { Product } from "../../interfaces";
-import { getProducts } from "../../services/products";
+import { useCallback, useEffect, useState } from 'react'
+import type { Product } from '../../interfaces'
+import { getProducts } from '../../services/products'
+
+const STORAGE_KEY = 'products-cache'
+const TTL = 1000 * 60 * 10 // 10 minutes
 
 export const useProducts = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const fetchProducts = useCallback(async () => {
     try {
-      setLoading(true);
-      setError(null);
+      setLoading(true)
+      setError(null)
 
-      const data: Product[] = await getProducts();
-      setProducts(data);
+      const data = await getProducts()
+
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          data,
+          timestamp: Date.now()
+        })
+      )
+
+      setProducts(data)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error");
+      setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
-    let isMounted = true;
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY)
 
-    const load = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+      if (stored) {
+        const parsed = JSON.parse(stored)
 
-        const data: Product[] = await getProducts();
+        const isValid = Date.now() - parsed.timestamp < TTL
 
-        if (isMounted) {
-          setProducts(data);
+        if (isValid) {
+          setProducts(parsed.data)
+          return
         }
-      } catch (err) {
-        if (!isMounted) return;
-
-        setError(err instanceof Error ? err.message : "Unknown error");
-      } finally {
-        if (isMounted) setLoading(false);
       }
-    };
+    } catch (err) {
+      console.warn('Cache error', err)
+    }
 
-    load();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+    fetchProducts()
+  }, [fetchProducts])
 
   const refetch = useCallback(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    fetchProducts()
+  }, [fetchProducts])
 
   return {
     products,
     loading,
     error,
-    refetch,
-  };
-};
+    refetch
+  }
+}
